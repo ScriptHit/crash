@@ -4,55 +4,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foguetinho Game</title>
+    <title>Script Crash Game 🚀</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 2.5rem;
+        }
+
+        p {
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .game-container {
+            width: 90%;
+            max-width: 500px;
+            background-color: #34495e;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        label {
+            color: #ecf0f1;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #7f8c8d;
+            border-radius: 5px;
+            margin-top: 5px;
+            transition: border-color 0.3s;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        input:focus {
+            border-color: #f39c12;
+            outline: none;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #f39c12;
+            color: #2c3e50;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #e67e22;
+        }
+
+        button:disabled {
+            background-color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        .display {
+            font-size: 2rem;
+            text-align: center;
+            margin: 20px 0;
+            transition: color 0.3s;
+        }
+
+        /* Estilo para a caixa modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #34495e;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            background-color: #e67e22;
+            color: #2c3e50;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        #retirarBtn {
+            width: 100%;
+            font-size: 1.5rem;
+            padding: 15px 10px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #multiplier {
+            margin-top: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+    </style>
 </head>
-<style>
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f5f5f5;
-}
 
-.game-container {
-    width: 90%;
-    max-width: 400px;
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.input-container {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-}
-
-button {
-    padding: 10px;
-    border: none;
-    background-color: #007BFF;
-    color: #ffffff;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 10px 0;
-}
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.display {
-    font-size: 2rem;
-    text-align: center;
-    margin: 20px 0;
-}
-</style>
 <body>
+    <h1>Script Crash Game 🚀</h1>
+    <p>Lance o foguete e veja até onde você pode ir!</p>
     <div class="game-container">
         <div class="input-container">
             <label for="deposito">Depósito inicial:</label>
@@ -64,101 +152,128 @@ button:disabled {
             <input type="number" id="aposta" placeholder="Digite a quantia">
         </div>
 
-        <button id="depositarBtn">Depositar</button>
-        <button id="startBtn" disabled>Começar o Jogo</button>
+        <button id="depositarBtn">Depositar 💰</button>
+        <button id="startBtn" disabled>Começar o Jogo 🚀</button>
 
         <div class="display">
-            <span id="banca">Banca: R$0.00</span>
+            <span id="banca">Banca: R$0,00</span>
         </div>
 
-        <div class="display">
+        <button id="retirarBtn" disabled>
+            Retirar 💸
             <span id="multiplier">x1.00</span>
-        </div>
+        </button>
+    </div>
 
-        <button id="retirarBtn" disabled>Retirar</button>
+    <!-- Caixa modal para mostrar ganhos e perdas -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <div class="modal-close" onclick="closeModal()">Fechar</div>
+        </div>
     </div>
 
     <script>
-    const depositoEl = document.getElementById('deposito');
-    const apostaEl = document.getElementById('aposta');
-    const depositarBtn = document.getElementById('depositarBtn');
-    const startBtn = document.getElementById('startBtn');
-    const multiplierEl = document.getElementById('multiplier');
-    const retirarBtn = document.getElementById('retirarBtn');
-    const bancaEl = document.getElementById('banca');
+        const depositoEl = document.getElementById('deposito');
+        const apostaEl = document.getElementById('aposta');
+        const depositarBtn = document.getElementById('depositarBtn');
+        const startBtn = document.getElementById('startBtn');
+        const multiplierEl = document.getElementById('multiplier');
+        const retirarBtn = document.getElementById('retirarBtn');
+        const bancaEl = document.getElementById('banca');
 
-    let banca = 0.0;
-    let currentMultiplier = 1.0;
-    let gameInterval;
+        let banca = 0.0;
+        let currentMultiplier = 1.0;
+        let gameInterval;
 
-    depositarBtn.addEventListener('click', depositar);
-    startBtn.addEventListener('click', startGame);
-    retirarBtn.addEventListener('click', retirarAposta);
+        depositarBtn.addEventListener('click', depositar);
+        startBtn.addEventListener('click', startGame);
+        retirarBtn.addEventListener('click', retirarAposta);
 
-    function depositar() {
-        const depositAmount = parseFloat(depositoEl.value);
-        if (!isNaN(depositAmount) && depositAmount > 0) {
-            banca += depositAmount;
-            bancaEl.textContent = `Banca: R$${banca.toFixed(2)}`;
-            depositoEl.disabled = true;
-            depositarBtn.disabled = true;
-            apostaEl.disabled = false;
-            startBtn.disabled = false;
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
         }
-    }
 
-    function startGame() {
-        const betAmount = parseFloat(apostaEl.value);
-        if (!isNaN(betAmount) && betAmount > 0 && betAmount <= banca) {
-            apostaEl.disabled = true;
-            startBtn.disabled = true;
-            retirarBtn.disabled = false;
-
-            gameInterval = setInterval(() => {
-                currentMultiplier += 0.2; // Aumento mais rápido
-                multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
-
-                // Lógica de parada do jogo (por exemplo, parar aleatoriamente)
-                if (Math.random() < 0.08) { // 10% de chance de parar a cada segundo
-                    clearInterval(gameInterval);
-                    endGame();
-                }
-            }, 100); // A cada segundo
+        function depositar() {
+            const depositAmount = parseFloat(depositoEl.value);
+            if (!isNaN(depositAmount) && depositAmount > 0) {
+                banca += depositAmount;
+                bancaEl.textContent = `Banca: ${formatCurrency(banca)}`;
+                depositoEl.disabled = true;
+                depositarBtn.disabled = true;
+                apostaEl.disabled = false;
+                startBtn.disabled = false;
+            }
         }
-    }
 
-    function retirarAposta() {
-        clearInterval(gameInterval);
-        const betAmount = parseFloat(apostaEl.value);
-        if (!isNaN(betAmount) && betAmount > 0 && betAmount <= banca) {
+        function startGame() {
+            const betAmount = parseFloat(apostaEl.value);
+            if (!isNaN(betAmount) && betAmount > 0 && betAmount <= banca) {
+                banca -= betAmount;
+                bancaEl.textContent = `Banca: ${formatCurrency(banca)}`;
+
+                apostaEl.disabled = true;
+                startBtn.disabled = true;
+                retirarBtn.disabled = false;
+
+                gameInterval = setInterval(() => {
+                    currentMultiplier += 0.1;
+                    multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
+
+                    if (currentMultiplier >= 2.0) {
+                        multiplierEl.setAttribute("data-high", "true");
+                    } else {
+                        multiplierEl.removeAttribute("data-high");
+                    }
+
+                    if (Math.random() < 0.08) {
+                        clearInterval(gameInterval);
+                        endGame();
+                    }
+                }, 500);
+            }
+        }
+
+        function retirarAposta() {
+            clearInterval(gameInterval);
+            const betAmount = parseFloat(apostaEl.value);
             const winnings = betAmount * currentMultiplier;
             banca += winnings;
-            bancaEl.textContent = `Banca: R$${banca.toFixed(2)}`;
-            alert(`Você ganhou R$${winnings.toFixed(2)}`);
-        } else {
-            alert('Aposta inválida. Verifique sua aposta e a quantidade na banca.');
+            bancaEl.textContent = `Banca: ${formatCurrency(banca)}`;
+            showModal(`Você ganhou ${formatCurrency(winnings)}`);
+            resetGame();
         }
 
-        apostaEl.value = ''; // Limpar o campo de aposta
-        apostaEl.disabled = false; // Habilitar o campo de aposta novamente
-        startBtn.disabled = false;
-        retirarBtn.disabled = true;
-    }
-
-    function endGame() {
-        apostaEl.disabled = false;
-        startBtn.disabled = false;
-        retirarBtn.disabled = true;
-
-        if (Math.random() < 0.1) { // 10% de chance de perda
-            alert('Você perdeu sua aposta!');
+        function endGame() {
+            const chanceOfLoss = Math.random();
+            if (chanceOfLoss < 0.1) {
+                showModal('Você perdeu sua aposta!');
+            } else {
+                showModal('O jogo terminou! Faça sua próxima aposta.');
+            }
+            resetGame();
         }
 
-        apostaEl.value = ''; // Limpar o campo de aposta
-        apostaEl.disabled = false; // Habilitar o campo de aposta novamente
-        startBtn.disabled = false;
-        retirarBtn.disabled = true;
-    }
+        function resetGame() {
+            currentMultiplier = 1.0;
+            multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
+            apostaEl.value = '';
+            apostaEl.disabled = false;
+            startBtn.disabled = false;
+            retirarBtn.disabled = true;
+        }
+
+        function showModal(message) {
+            const modalEl = document.getElementById('modal');
+            const modalMessageEl = document.getElementById('modalMessage');
+            modalMessageEl.textContent = message;
+            modalEl.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modalEl = document.getElementById('modal');
+            modalEl.style.display = 'none';
+        }
     </script>
 </body>
 
