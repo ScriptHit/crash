@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foguetinho Game</title>
+</head>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.game-container {
+    width: 90%;
+    max-width: 400px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    background-color: #007BFF;
+    color: #ffffff;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.display {
+    font-size: 2rem;
+    text-align: center;
+    margin: 20px 0;
+}
+</style>
+<body>
+    <div class="game-container">
+        <div class="input-container">
+            <label for="deposito">Depósito inicial:</label>
+            <input type="number" id="deposito" placeholder="Digite o valor do depósito">
+        </div>
+
+        <div class="input-container">
+            <label for="aposta">Quantia da aposta:</label>
+            <input type="number" id="aposta" placeholder="Digite a quantia">
+        </div>
+
+        <button id="depositarBtn">Depositar</button>
+        <button id="startBtn" disabled>Começar o Jogo</button>
+
+        <div class="display">
+            <span id="banca">Banca: R$0.00</span>
+        </div>
+
+        <div class="display">
+            <span id="multiplier">x1.00</span>
+        </div>
+
+        <button id="retirarBtn" disabled>Retirar</button>
+    </div>
+
+    <script>
+    const depositoEl = document.getElementById('deposito');
+    const apostaEl = document.getElementById('aposta');
+    const depositarBtn = document.getElementById('depositarBtn');
+    const startBtn = document.getElementById('startBtn');
+    const multiplierEl = document.getElementById('multiplier');
+    const retirarBtn = document.getElementById('retirarBtn');
+    const bancaEl = document.getElementById('banca');
+
+    let banca = 0.0;
+    let currentMultiplier = 1.0;
+    let gameInterval;
+
+    depositarBtn.addEventListener('click', depositar);
+    startBtn.addEventListener('click', startGame);
+    retirarBtn.addEventListener('click', retirarAposta);
+
+    function depositar() {
+        const depositAmount = parseFloat(depositoEl.value);
+        if (!isNaN(depositAmount) && depositAmount > 0) {
+            banca += depositAmount;
+            bancaEl.textContent = `Banca: R$${banca.toFixed(2)}`;
+            depositoEl.disabled = true;
+            depositarBtn.disabled = true;
+            apostaEl.disabled = false;
+            startBtn.disabled = false;
+        }
+    }
+
+    function startGame() {
+        const betAmount = parseFloat(apostaEl.value);
+        if (!isNaN(betAmount) && betAmount > 0 && betAmount <= banca) {
+            apostaEl.disabled = true;
+            startBtn.disabled = true;
+            retirarBtn.disabled = false;
+
+            gameInterval = setInterval(() => {
+                currentMultiplier += 0.2; // Aumento mais rápido
+                multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
+
+                // Lógica de parada do jogo (por exemplo, parar aleatoriamente)
+                if (Math.random() < 0.08) { // 10% de chance de parar a cada segundo
+                    clearInterval(gameInterval);
+                    endGame();
+                }
+            }, 100); // A cada segundo
+        }
+    }
+
+    function retirarAposta() {
+        clearInterval(gameInterval);
+        const betAmount = parseFloat(apostaEl.value);
+        if (!isNaN(betAmount) && betAmount > 0 && betAmount <= banca) {
+            const winnings = betAmount * currentMultiplier;
+            banca += winnings;
+            bancaEl.textContent = `Banca: R$${banca.toFixed(2)}`;
+            alert(`Você ganhou R$${winnings.toFixed(2)}`);
+        } else {
+            alert('Aposta inválida. Verifique sua aposta e a quantidade na banca.');
+        }
+
+        apostaEl.value = ''; // Limpar o campo de aposta
+        apostaEl.disabled = false; // Habilitar o campo de aposta novamente
+        startBtn.disabled = false;
+        retirarBtn.disabled = true;
+    }
+
+    function endGame() {
+        apostaEl.disabled = false;
+        startBtn.disabled = false;
+        retirarBtn.disabled = true;
+
+        if (Math.random() < 0.1) { // 10% de chance de perda
+            alert('Você perdeu sua aposta!');
+        }
+
+        apostaEl.value = ''; // Limpar o campo de aposta
+        apostaEl.disabled = false; // Habilitar o campo de aposta novamente
+        startBtn.disabled = false;
+        retirarBtn.disabled = true;
+    }
+    </script>
+</body>
+
+</html>
