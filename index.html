@@ -5,20 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Script Crash Game 🚀</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             height: 100vh;
-            background-color: #2c3e50;
+            background: linear-gradient(120deg, #2980b9, #8e44ad);
             color: #ecf0f1;
         }
 
         h1 {
             margin-top: 20px;
             font-size: 2.5rem;
+            font-family: 'Pacifico', cursive;
         }
 
         p {
@@ -50,13 +52,14 @@
             border: 1px solid #7f8c8d;
             border-radius: 5px;
             margin-top: 5px;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, transform 0.2s;
             background-color: #2c3e50;
             color: #ecf0f1;
         }
 
         input:focus {
             border-color: #f39c12;
+            transform: scale(1.05);
             outline: none;
         }
 
@@ -68,11 +71,12 @@
             border-radius: 5px;
             cursor: pointer;
             margin: 10px 0;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
         button:hover {
             background-color: #e67e22;
+            transform: scale(1.05);
         }
 
         button:disabled {
@@ -87,7 +91,25 @@
             transition: color 0.3s;
         }
 
-        /* Estilo para a caixa modal */
+        #retirarBtn {
+            width: 100%;
+            font-size: 1.5rem;
+            padding: 15px 10px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #multiplier {
+            margin-top: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ecf0f1;
+            /* Adicionando animação */
+            transition: transform 0.3s;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -118,23 +140,6 @@
             margin-top: 20px;
             display: inline-block;
         }
-
-        #retirarBtn {
-            width: 100%;
-            font-size: 1.5rem;
-            padding: 15px 10px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #multiplier {
-            margin-top: 10px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ecf0f1;
-        }
     </style>
 </head>
 
@@ -144,12 +149,12 @@
     <div class="game-container">
         <div class="input-container">
             <label for="deposito">Depósito inicial:</label>
-            <input type="number" id="deposito" placeholder="Digite o valor do depósito">
+            <input type="text" id="deposito" placeholder="Digite o valor do depósito">
         </div>
 
         <div class="input-container">
             <label for="aposta">Quantia da aposta:</label>
-            <input type="number" id="aposta" placeholder="Digite a quantia">
+            <input type="text" id="aposta" placeholder="Digite a quantia">
         </div>
 
         <button id="depositarBtn">Depositar 💰</button>
@@ -185,17 +190,36 @@
         let banca = 0.0;
         let currentMultiplier = 1.0;
         let gameInterval;
-
-        depositarBtn.addEventListener('click', depositar);
-        startBtn.addEventListener('click', startGame);
-        retirarBtn.addEventListener('click', retirarAposta);
+		let crashMultiplier = 0; // Este será o ponto onde o jogo "crasha"
 
         function formatCurrency(value) {
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
         }
 
+        depositoEl.addEventListener('blur', function() {
+            const value = parseFloat(this.value.replace(/[R$,.]/g, '').replace(/(,|\.)/, '.'));
+            if (!isNaN(value)) {
+                this.value = formatCurrency(value);
+            }
+        });
+
+        apostaEl.addEventListener('blur', function() {
+            const value = parseFloat(this.value.replace(/[R$,.]/g, '').replace(/(,|\.)/, '.'));
+            if (!isNaN(value)) {
+                this.value = formatCurrency(value);
+            }
+        });
+
+        depositarBtn.addEventListener('click', depositar);
+        startBtn.addEventListener('click', startGame);
+        retirarBtn.addEventListener('click', retirarAposta);
+
+        function currencyToNumber(value) {
+            return parseFloat(value.replace(/[R$]/g, '').replace(/\./g, '').replace(',', '.'));
+        }
+
         function depositar() {
-            const depositAmount = parseFloat(depositoEl.value);
+            const depositAmount = currencyToNumber(depositoEl.value);
             if (!isNaN(depositAmount) && depositAmount > 0) {
                 banca += depositAmount;
                 bancaEl.textContent = `Banca: ${formatCurrency(banca)}`;
@@ -207,66 +231,69 @@
         }
 
         function startGame() {
-            const betAmount = parseFloat(apostaEl.value);
+			crashMultiplier = 1 + Math.random() * 4;
+            const betAmount = currencyToNumber(apostaEl.value);
             if (!isNaN(betAmount) && betAmount > 0 && betAmount <= banca) {
                 banca -= betAmount;
                 bancaEl.textContent = `Banca: ${formatCurrency(banca)}`;
-
-                apostaEl.disabled = true;
                 startBtn.disabled = true;
                 retirarBtn.disabled = false;
-
-                gameInterval = setInterval(() => {
-                    currentMultiplier += 0.1;
-                    multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
-
-                    if (currentMultiplier >= 2.0) {
-                        multiplierEl.setAttribute("data-high", "true");
-                    } else {
-                        multiplierEl.removeAttribute("data-high");
-                    }
-
-                    if (Math.random() < 0.08) {
-                        clearInterval(gameInterval);
-                        endGame();
-                    }
-                }, 500);
+                gameInterval = setInterval(increaseMultiplier, 100); // Ajustado para 100ms
             }
         }
 
+    function increaseMultiplier() {
+        currentMultiplier += 0.01; // Aumento do multiplicador para 0.01
+        multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
+
+        // Verificar se o multiplicador atual ultrapassou o multiplicador de crash
+        if (currentMultiplier >= crashMultiplier) {
+            gameCrashed();
+        }
+    }
+
+    function gameCrashed() {
+        clearInterval(gameInterval);
+        openModal(`O jogo crashou em x${currentMultiplier.toFixed(2)}!`, 'lose');
+        // Adicione som de crash aqui, se desejar
+        startBtn.disabled = false;
+        retirarBtn.disabled = true;
+        currentMultiplier = 1.0;
+        multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
+    }
         function retirarAposta() {
             clearInterval(gameInterval);
-            const betAmount = parseFloat(apostaEl.value);
+            const betAmount = currencyToNumber(apostaEl.value);
             const winnings = betAmount * currentMultiplier;
             banca += winnings;
             bancaEl.textContent = `Banca: ${formatCurrency(banca)}`;
-            showModal(`Você ganhou ${formatCurrency(winnings)}`);
-            resetGame();
-        }
 
-        function endGame() {
-            const chanceOfLoss = Math.random();
-            if (chanceOfLoss < 0.1) {
-                showModal('Você perdeu sua aposta!');
+            if (winnings > betAmount) {
+                const profit = winnings - betAmount;
+                openModal(`Você ganhou ${formatCurrency(profit)}! Multiplicador parou em x${currentMultiplier.toFixed(2)}!`, 'win');
+                // Adicione som de vitória aqui, se desejar
             } else {
-                showModal('O jogo terminou! Faça sua próxima aposta.');
+                openModal(`Você perdeu ${formatCurrency(betAmount)}.`, 'lose');
+                // Adicione som de perda aqui, se desejar
             }
-            resetGame();
-        }
 
-        function resetGame() {
-            currentMultiplier = 1.0;
-            multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
-            apostaEl.value = '';
-            apostaEl.disabled = false;
             startBtn.disabled = false;
             retirarBtn.disabled = true;
+            currentMultiplier = 1.0;
+            multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
         }
 
-        function showModal(message) {
+        function openModal(message, type) {
             const modalEl = document.getElementById('modal');
-            const modalMessageEl = document.getElementById('modalMessage');
-            modalMessageEl.textContent = message;
+            const modalMessage = document.getElementById('modalMessage');
+
+            if (type === 'win') {
+                modalMessage.style.color = '#4CAF50';
+            } else if (type === 'lose') {
+                modalMessage.style.color = '#f44336';
+            }
+
+            modalMessage.textContent = message;
             modalEl.style.display = 'flex';
         }
 
