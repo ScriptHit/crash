@@ -1,307 +1,653 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<html><head><base href="https://websim.co/crash-game-br-ultimate-responsive/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crash Dourado Ultimate - A Aventura Brasileira de Apostas!</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Script Crash Game 🚀</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+    :root {
+        --primary-color: #009c3b;
+        --secondary-color: #ffdf00;
+        --background-color: #002776;
+        --text-color: #ffffff;
+        --accent-color: #ff9900;
+        --danger-color: #ff3b3b;
+        --success-color: #00c853;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: radial-gradient(ellipse at bottom, #0d1d31 0%, #0c0d13 100%);
+        color: var(--text-color);
+        overflow-x: hidden;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        background-color: rgba(0, 156, 59, 0.15);
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        border-bottom: 3px solid var(--secondary-color);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .graph {
+        flex-grow: 1;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(0, 39, 118, 0.5) 100%);
+        border-radius: 20px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 40px rgba(255, 223, 0, 0.3);
+        min-height: 300px;
+    }
+
+    .multiplier {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 48px;
+        font-weight: bold;
+        text-shadow: 0 0 20px var(--accent-color);
+    }
+
+    .history {
+        height: 100px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 15px;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .history-item {
+        display: inline-block;
+        padding: 8px 15px;
+        margin-right: 10px;
+        border-radius: 20px;
+        font-weight: bold;
+        transition: all 0.4s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .history-item:hover {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    button {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+        color: var(--background-color);
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        transition: all 0.4s ease;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 20px rgba(255, 223, 0, 0.4);
+    }
+
+    input[type="number"] {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+        border: 3px solid var(--secondary-color);
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-color);
+        border-radius: 25px;
+        font-size: 16px;
+        transition: all 0.4s ease;
+    }
+
+    input[type="number"]:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 15px var(--accent-color);
+    }
+
+    .red { background: linear-gradient(45deg, #ff4757, #ff6b81); color: white; }
+    .green { background: linear-gradient(45deg, #2ed573, #7bed9f); color: white; }
+
+    #balance {
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: var(--secondary-color);
+        text-shadow: 0 0 15px var(--accent-color);
+    }
+
+    .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.8);
+    }
+
+    .modal-content {
+        background: linear-gradient(135deg, var(--background-color), #001240);
+        margin: 10% auto;
+        padding: 30px;
+        border: 3px solid var(--secondary-color);
+        width: 90%;
+        max-width: 400px;
+        border-radius: 20px;
+        box-shadow: 0 0 30px rgba(255, 223, 0, 0.6);
+    }
+
+    .close {
+        color: var(--text-color);
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.4s ease;
+    }
+
+    .close:hover {
+        color: var(--accent-color);
+        transform: rotate(90deg);
+    }
+
+    .deposit-option {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .deposit-option button {
+        width: 48%;
+    }
+
+    #crashLine {
+        filter: drop-shadow(0 0 12px var(--secondary-color));
+    }
+
+    .pulse-effect {
+        animation: pulse 2.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .shake-effect {
+        animation: shake 0.6s;
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(8px); }
+        50% { transform: translateX(-8px); }
+        75% { transform: translateX(8px); }
+        100% { transform: translateX(0); }
+    }
+
+    .footer {
+        text-align: center;
+        font-size: 14px;
+        margin-top: 20px;
+        opacity: 0.7;
+    }
+
+    .ranking-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .ranking-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+    .ranking-position {
+        font-weight: bold;
+        font-size: 20px;
+        color: var(--secondary-color);
+    }
+
+    .ranking-name {
+        flex-grow: 1;
+        margin-left: 15px;
+    }
+
+    .ranking-score {
+        font-weight: bold;
+        color: var(--accent-color);
+    }
+
+    #gameInfo {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 14px;
+        color: var(--secondary-color);
+    }
+
+    @media (min-width: 768px) {
+        .container {
+            flex-direction: row;
+        }
+
+        .sidebar {
+            width: 300px;
             height: 100vh;
-            background: linear-gradient(120deg, #2980b9, #8e44ad);
-            color: #ecf0f1;
+            overflow-y: auto;
+            border-right: 3px solid var(--secondary-color);
+            border-bottom: none;
         }
 
-        h1 {
-            margin-top: 20px;
-            font-size: 2.5rem;
-            font-family: 'Pacifico', cursive;
+        .main-content {
+            padding: 30px;
         }
 
-        p {
-            margin: 10px 0;
-            font-style: italic;
+        .multiplier {
+            font-size: 72px;
         }
 
-        .game-container {
-            width: 90%;
-            max-width: 500px;
-            background-color: #34495e;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+        .history {
+            height: 120px;
         }
 
-        .input-container {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
+        #balance {
+            font-size: 28px;
         }
 
-        label {
-            color: #ecf0f1;
+        #gameInfo {
+            font-size: 16px;
         }
-
-        input {
-            padding: 10px;
-            border: 1px solid #7f8c8d;
-            border-radius: 5px;
-            margin-top: 5px;
-            transition: border-color 0.3s, transform 0.2s;
-            background-color: #2c3e50;
-            color: #ecf0f1;
-        }
-
-        input:focus {
-            border-color: #f39c12;
-            transform: scale(1.05);
-            outline: none;
-        }
-
-        button {
-            padding: 10px;
-            border: none;
-            background-color: #f39c12;
-            color: #2c3e50;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px 0;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        button:hover {
-            background-color: #e67e22;
-            transform: scale(1.05);
-        }
-
-        button:disabled {
-            background-color: #7f8c8d;
-            cursor: not-allowed;
-        }
-
-        .display {
-            font-size: 2rem;
-            text-align: center;
-            margin: 20px 0;
-            transition: color 0.3s;
-        }
-
-        #retirarBtn {
-            width: 100%;
-            font-size: 1.5rem;
-            padding: 15px 10px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #multiplier {
-            margin-top: 10px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ecf0f1;
-            /* Adicionando animação */
-            transition: transform 0.3s;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: #34495e;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 80%;
-            text-align: center;
-        }
-
-        .modal-close {
-            cursor: pointer;
-            background-color: #e67e22;
-            color: #2c3e50;
-            border-radius: 5px;
-            padding: 5px 10px;
-            margin-top: 20px;
-            display: inline-block;
-        }
-    </style>
+    }
+</style>
 </head>
-
 <body>
-    <h1>Script Crash Game 🚀</h1>
-    <p>Lance o foguete e veja até onde você pode ir!</p>
-    <div class="game-container">
-        <div class="input-container">
-            <label for="deposito">Depósito inicial:</label>
-            <input type="text" id="deposito" placeholder="Digite o valor do depósito">
-        </div>
-
-        <div class="input-container">
-            <label for="aposta">Quantia da aposta:</label>
-            <input type="text" id="aposta" placeholder="Digite a quantia">
-        </div>
-
-        <button id="depositarBtn">Depositar 💰</button>
-        <button id="startBtn" disabled>Começar o Jogo 🚀</button>
-
-        <div class="display">
-            <span id="banca">Banca: R$0,00</span>
-        </div>
-
-        <button id="retirarBtn" disabled>
-            Retirar 💸
-            <span id="multiplier">x1.00</span>
-        </button>
+<div class="particles" id="particles"></div>
+<div class="container">
+    <div class="sidebar">
+        <div id="balance" class="pulse-effect">Saldo: R$ 1000,00</div>
+        <button id="depositBtn" class="pulse-effect">Depositar</button>
+        <input type="number" id="betAmount" placeholder="Valor da Aposta" min="1" max="1000">
+        <input type="number" id="autoRetire" placeholder="Retirar Auto em" min="1.01" step="0.01">
+        <button id="startGame">Iniciar Jogo</button>
+        <button id="cashOutBtn" style="display: none;">Retirar</button>
+        <button id="rankingBtn">Ver Ranking</button>
+        <div class="footer">Jogue com responsabilidade</div>
     </div>
-
-    <!-- Caixa modal para mostrar ganhos e perdas -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <p id="modalMessage"></p>
-            <div class="modal-close" onclick="closeModal()">Fechar</div>
+    <div class="main-content">
+        <div class="graph">
+            <svg width="100%" height="100%" viewBox="0 0 1000 500" preserveAspectRatio="none">
+                <path id="crashLine" d="M0,500 L0,500" fill="none" stroke="#ffdf00" stroke-width="5"/>
+            </svg>
+            <div class="multiplier" id="currentMultiplier">1,00x</div>
+            <div id="gameInfo"></div>
         </div>
+        <div class="history" id="history"></div>
     </div>
+</div>
 
-    <script>
-        const depositoEl = document.getElementById('deposito');
-        const apostaEl = document.getElementById('aposta');
-        const depositarBtn = document.getElementById('depositarBtn');
-        const startBtn = document.getElementById('startBtn');
-        const multiplierEl = document.getElementById('multiplier');
-        const retirarBtn = document.getElementById('retirarBtn');
-        const bancaEl = document.getElementById('banca');
+<div id="depositModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Depositar</h2>
+        <div class="deposit-option">
+            <button onclick="quickDeposit(50)">R$ 50</button>
+            <button onclick="quickDeposit(100)">R$ 100</button>
+        </div>
+        <div class="deposit-option">
+            <button onclick="quickDeposit(200)">R$ 200</button>
+            <button onclick="quickDeposit(500)">R$ 500</button>
+        </div>
+        <input type="number" id="customDepositAmount" placeholder="Valor Personalizado">
+        <button onclick="customDeposit()">Depositar Valor Personalizado</button>
+    </div>
+</div>
 
-        let banca = 0.0;
-        let currentMultiplier = 1.0;
-        let gameInterval;
-		let crashMultiplier = 0; // Este será o ponto onde o jogo "crasha"
+<div id="rankingModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Ranking dos Jogadores</h2>
+        <ul class="ranking-list" id="rankingList">
+            <!-- Ranking items will be dynamically added here -->
+        </ul>
+    </div>
+</div>
 
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-        }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+let gameActive = false;
+let multiplier = 1.00;
+let crashPoint;
+let graphInterval;
+let betAmount = 0;
+let autoRetireAt = 0;
+let balance = 1000.00;
+let totalGames = 0;
+let totalWins = 0;
 
-        depositoEl.addEventListener('blur', function() {
-            const value = parseFloat(this.value.replace(/[R$,.]/g, '').replace(/(,|\.)/, '.'));
-            if (!isNaN(value)) {
-                this.value = formatCurrency(value);
-            }
-        });
+const startGameBtn = document.getElementById('startGame');
+const cashOutBtn = document.getElementById('cashOutBtn');
+const betAmountInput = document.getElementById('betAmount');
+const autoRetireInput = document.getElementById('autoRetire');
+const currentMultiplierEl = document.getElementById('currentMultiplier');
+const crashLine = document.getElementById('crashLine');
+const historyEl = document.getElementById('history');
+const balanceEl = document.getElementById('balance');
+const depositBtn = document.getElementById('depositBtn');
+const depositModal = document.getElementById('depositModal');
+const rankingBtn = document.getElementById('rankingBtn');
+const rankingModal = document.getElementById('rankingModal');
+const closeModals = document.getElementsByClassName('close');
+const gameInfoEl = document.getElementById('gameInfo');
 
-        apostaEl.addEventListener('blur', function() {
-            const value = parseFloat(this.value.replace(/[R$,.]/g, '').replace(/(,|\.)/, '.'));
-            if (!isNaN(value)) {
-                this.value = formatCurrency(value);
-            }
-        });
+startGameBtn.addEventListener('click', startGame);
+cashOutBtn.addEventListener('click', cashOut);
+betAmountInput.addEventListener('input', updateBetAmount);
+autoRetireInput.addEventListener('input', updateAutoRetire);
+depositBtn.addEventListener('click', () => depositModal.style.display = 'block');
+rankingBtn.addEventListener('click', () => {
+    updateRanking();
+    rankingModal.style.display = 'block';
+});
 
-        depositarBtn.addEventListener('click', depositar);
-        startBtn.addEventListener('click', startGame);
-        retirarBtn.addEventListener('click', retirarAposta);
+for (let closeBtn of closeModals) {
+    closeBtn.addEventListener('click', function() {
+        depositModal.style.display = 'none';
+        rankingModal.style.display = 'none';
+    });
+}
 
-        function currencyToNumber(value) {
-            return parseFloat(value.replace(/[R$]/g, '').replace(/\./g, '').replace(',', '.'));
-        }
-
-        function depositar() {
-            const depositAmount = currencyToNumber(depositoEl.value);
-            if (!isNaN(depositAmount) && depositAmount > 0) {
-                banca += depositAmount;
-                bancaEl.textContent = `Banca: ${formatCurrency(banca)}`;
-                depositoEl.disabled = true;
-                depositarBtn.disabled = true;
-                apostaEl.disabled = false;
-                startBtn.disabled = false;
-            }
-        }
-
-        function startGame() {
-			crashMultiplier = 1 + Math.random() * 4;
-            const betAmount = currencyToNumber(apostaEl.value);
-            if (!isNaN(betAmount) && betAmount > 0 && betAmount <= banca) {
-                banca -= betAmount;
-                bancaEl.textContent = `Banca: ${formatCurrency(banca)}`;
-                startBtn.disabled = true;
-                retirarBtn.disabled = false;
-                gameInterval = setInterval(increaseMultiplier, 100); // Ajustado para 100ms
-            }
-        }
-
-    function increaseMultiplier() {
-        currentMultiplier += 0.01; // Aumento do multiplicador para 0.01
-        multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
-
-        // Verificar se o multiplicador atual ultrapassou o multiplicador de crash
-        if (currentMultiplier >= crashMultiplier) {
-            gameCrashed();
-        }
+window.addEventListener('click', function(event) {
+    if (event.target == depositModal) {
+        depositModal.style.display = 'none';
     }
-
-    function gameCrashed() {
-        clearInterval(gameInterval);
-        openModal(`O jogo crashou em x${currentMultiplier.toFixed(2)}!`, 'lose');
-        // Adicione som de crash aqui, se desejar
-        startBtn.disabled = false;
-        retirarBtn.disabled = true;
-        currentMultiplier = 1.0;
-        multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
+    if (event.target == rankingModal) {
+        rankingModal.style.display = 'none';
     }
-        function retirarAposta() {
-            clearInterval(gameInterval);
-            const betAmount = currencyToNumber(apostaEl.value);
-            const winnings = betAmount * currentMultiplier;
-            banca += winnings;
-            bancaEl.textContent = `Banca: ${formatCurrency(banca)}`;
+});
 
-            if (winnings > betAmount) {
-                const profit = winnings - betAmount;
-                openModal(`Você ganhou ${formatCurrency(profit)}! Multiplicador parou em x${currentMultiplier.toFixed(2)}!`, 'win');
-                // Adicione som de vitória aqui, se desejar
-            } else {
-                openModal(`Você perdeu ${formatCurrency(betAmount)}.`, 'lose');
-                // Adicione som de perda aqui, se desejar
-            }
+function updateBetAmount() {
+    betAmount = parseFloat(betAmountInput.value) || 0;
+}
 
-            startBtn.disabled = false;
-            retirarBtn.disabled = true;
-            currentMultiplier = 1.0;
-            multiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
+function updateAutoRetire() {
+    autoRetireAt = parseFloat(autoRetireInput.value) || 0;
+}
+
+function quickDeposit(amount) {
+    balance += amount;
+    updateBalance();
+    showNotification(`Depósito de R$ ${amount.toFixed(2)} realizado com sucesso!`, 'green');
+    depositModal.style.display = 'none';
+    playSound('deposit');
+}
+
+function customDeposit() {
+    const amount = parseFloat(document.getElementById('customDepositAmount').value);
+    if (amount && amount > 0) {
+        balance += amount;
+        updateBalance();
+        showNotification(`Depósito de R$ ${amount.toFixed(2)} realizado com sucesso!`, 'green');
+        depositModal.style.display = 'none';
+        playSound('deposit');
+    } else {
+        showNotification('Por favor, insira um valor válido.', 'red');
+    }
+}
+
+function updateBalance() {
+    balanceEl.textContent = `Saldo: R$ ${balance.toFixed(2)}`;
+    gsap.from(balanceEl, {scale: 1.2, duration: 0.5, ease: "elastic.out(1, 0.3)"});
+}
+
+function startGame() {
+    if (betAmount <= 0 || betAmount > balance) {
+        showNotification('Por favor, insira um valor de aposta válido.', 'red');
+        return;
+    }
+    
+    balance -= betAmount;
+    updateBalance();
+    
+    gameActive = true;
+    startGameBtn.style.display = 'none';
+    cashOutBtn.style.display = 'block';
+    crashPoint = generateCrashPoint();
+    multiplier = 1.00;
+    updateGraph();
+    
+    gsap.to(currentMultiplierEl, {scale: 1.2, duration: 0.3, yoyo: true, repeat: -1});
+    
+    totalGames++;
+    updateGameInfo();
+    
+    graphInterval = setInterval(() => {
+        multiplier += 0.01;
+        currentMultiplierEl.textContent = multiplier.toFixed(2) + 'x';
+        updateGraph();
+        
+        if (multiplier >= crashPoint) {
+            endGame(false);
+        } else if (autoRetireAt > 0 && multiplier >= autoRetireAt) {
+            cashOut();
         }
+    }, 100);
 
-        function openModal(message, type) {
-            const modalEl = document.getElementById('modal');
-            const modalMessage = document.getElementById('modalMessage');
+    playSound('start');
+}
 
-            if (type === 'win') {
-                modalMessage.style.color = '#4CAF50';
-            } else if (type === 'lose') {
-                modalMessage.style.color = '#f44336';
-            }
+function cashOut() {
+    if (gameActive) {
+        endGame(true);
+    }
+}
 
-            modalMessage.textContent = message;
-            modalEl.style.display = 'flex';
+function endGame(success) {
+    gameActive = false;
+    clearInterval(graphInterval);
+    startGameBtn.style.display = 'block';
+    cashOutBtn.style.display = 'none';
+    
+    gsap.to(currentMultiplierEl, {scale: 1, duration: 0.3});
+    
+    if (success) {
+        const winAmount = betAmount * multiplier;
+        balance += winAmount;
+        updateBalance();
+        showNotification(`Você ganhou R$ ${winAmount.toFixed(2)}!`, 'green');
+        playSound('win');
+        totalWins++;
+    } else {
+        currentMultiplierEl.textContent = 'QUEBROU';
+        currentMultiplierEl.classList.add('shake-effect');
+        setTimeout(() => currentMultiplierEl.classList.remove('shake-effect'), 500);
+        showNotification('Quebrou! Você perdeu sua aposta.', 'red');
+        playSound('lose');
+    }
+    
+    addToHistory(multiplier.toFixed(2), success);
+    updateGameInfo();
+}
+
+function generateCrashPoint() {
+    return (0.99 / (1 - Math.random())) ** (1 / 3);
+}
+
+function updateGraph() {
+    const svgWidth = 1000;
+    const svgHeight = 500;
+    const x = (multiplier - 1) * (svgWidth / 4);
+    const y = svgHeight - (Math.log(multiplier) / Math.log(1.5)) * svgHeight;
+    
+    crashLine.setAttribute('d', `${crashLine.getAttribute('d')} L${x},${y}`);
+}
+
+function addToHistory(value, success) {
+    const historyItem = document.createElement('span');
+    historyItem.classList.add('history-item');
+    historyItem.classList.add(success ? 'green' : 'red');
+    historyItem.textContent = value + 'x';
+    historyEl.prepend(historyItem);
+    
+    gsap.from(historyItem, {opacity: 0, x: -20, rotation: 360, duration: 0.5});
+    
+    if (historyEl.children.length > 10) {
+        historyEl.removeChild(historyEl.lastChild);
+    }
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.left = '50%';
+    notification.style.transform = 'translateX(-50%)';
+    notification.style.padding = '15px 25px';
+    notification.style.borderRadius = '30px';
+    notification.style.backgroundColor = type === 'green' ? '#2ed573' : '#ff4757';
+    notification.style.color = 'white';
+    notification.style.zIndex = '1000';
+    notification.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)';
+    notification.style.textAlign = 'center';
+    notification.style.maxWidth = '90%';
+    
+    document.body.appendChild(notification);
+    
+    gsap.from(notification, {opacity: 0, y: 50, duration: 0.5, ease: "back.out(1.7)"});
+    gsap.to(notification, {opacity: 0, delay: 3, duration: 0.5, onComplete: () => notification.remove()});
+}
+
+function playSound(type) {
+    const audio = new Audio();
+    switch(type) {
+        case 'start':
+            audio.src = 'https://websim.co/sounds/game-start.mp3';
+            break;
+        case 'win':
+            audio.src = 'https://websim.co/sounds/win.mp3';
+            break;
+        case 'lose':
+            audio.src = 'https://websim.co/sounds/lose.mp3';
+            break;
+        case 'deposit':
+            audio.src = 'https://websim.co/sounds/coin.mp3';
+            break;
+    }
+    audio.play();
+}
+
+function updateGameInfo() {
+    const winRate = totalGames > 0 ? (totalWins / totalGames * 100).toFixed(2) : 0;
+    gameInfoEl.textContent = `Jogos: ${totalGames} | Vitórias: ${totalWins} | Taxa de Vitória: ${winRate}%`;
+}
+
+function updateRanking() {
+    const rankingList = document.getElementById('rankingList');
+    rankingList.innerHTML = '';
+    
+    const players = [
+        {name: "João", score: 5000},
+        {name: "Maria", score: 4500},
+        {name: "Pedro", score: 4000},
+        {name: "Ana", score: 3500},
+        {name: "Carlos", score: 3000}
+    ];
+    
+    players.forEach((player, index) => {
+        const li = document.createElement('li');
+        li.classList.add('ranking-item');
+        li.innerHTML = `
+            <span class="ranking-position">#${index + 1}</span>
+            <span class="ranking-name">${player.name}</span>
+            <span class="ranking-score">R$ ${player.score.toFixed(2)}</span>
+        `;
+        rankingList.appendChild(li);
+    });
+}
+
+particlesJS('particles', {
+    particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: "#ffdf00" },
+        shape: { type: "circle" },
+        opacity: { value: 0.5, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
+        size: { value: 3, random: true, anim: { enable: true, speed: 2, size_min: 0.1, sync: false } },
+        line_linked: { enable: true, distance: 150, color: "#ffdf00", opacity: 0.4, width: 1 },
+        move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+    },
+    interactivity: {
+        detect_on: "canvas",
+        events: {
+            onhover: { enable: true, mode: "repulse" },
+            onclick: { enable: true, mode: "push" },
+            resize: true
+        },
+        modes: {
+            repulse: { distance: 100, duration: 0.4 },
+            push: { particles_nb: 4 }
         }
+    },
+    retina_detect: true
+});
 
-        function closeModal() {
-            const modalEl = document.getElementById('modal');
-            modalEl.style.display = 'none';
-        }
-    </script>
+updateBalance();
+updateGameInfo();
+</script>
 </body>
-
 </html>
